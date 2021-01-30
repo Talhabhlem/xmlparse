@@ -1,5 +1,7 @@
 <?php
 
+namespace home;
+
 require_once 'autoload.php';
 require_once 'ProductsParsing.php';
 /**
@@ -9,5 +11,6 @@ require_once 'ProductsParsing.php';
  * You might notice that we are using Symfony2 UniversalClassLoader. Do not worry if you have
  * never used Symfony2, if you follow PSR-0 it will just work as expected.
  */
-$parser_obj = new ProductsParsing("products.xml");
+$_strFeedUrl = "products.xml";
+$parser_obj = new ProductsParsing($_strFeedUrl);
 $parser_obj->parse();

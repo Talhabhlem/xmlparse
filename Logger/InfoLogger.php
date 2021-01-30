@@ -11,9 +11,9 @@ class InfoLogger implements IObserver
     public function notify(IObservable $objSource, $strMessage)
     {
         if ($objSource instanceof FeedParserBase) {
-            $log_file = "./info-logs.log";
-            error_log($strMessage, 3, $log_file);
-            printf('INFO -> %s.' . PHP_EOL, $strMessage);
+            $log_file = "info-logs.log";
+            error_log($strMessage . "\n", 3, $log_file);
+            printf(PHP_EOL . 'INFO -> %s', $strMessage . "\n");
         }
     }
 }

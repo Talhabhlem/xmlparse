@@ -1,52 +1,56 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mac
- * Date: 29/01/2021
- * Time: 8:40 PM
- */
+
+namespace home;
+require_once 'loggerInfo.php';
+
 use Parser\FeedParserBase;
 
 class ProductsParsing extends FeedParserBase
 {
-    public function __construct($strFeedUrl)
+    public function __construct($_strFeedUrl)
     {
-        $_strFeedUrl = "products.xml";
         parent::__construct($_strFeedUrl);
     }
 
     function parse()
     {
-        // TODO: Implement parse() method.
-        $_strFeedUrl = "products.xml";
-        $info_logger = new \Logger\InfoLogger();
-//        $info_logger->notify(*******,'start');
+        $logger = new loggerInfo();
+        $logger->info('start');
+        try {
+            $xml = simplexml_load_file(parent::getFeedUrl());
 
-//        $log_file = "my-errors.log";
-//        error_log($error_message, 3, $log_file);
+            if ($xml === false) {
+                $logger->error("feed not found");
+            } else {
+                if (count($xml->children()) == 0) {
+                    $logger->error("empty feed");
+                } else {
+                    foreach ($xml as $key => $Record) {
+                        if (!empty($Record->title)) {
+                            echo PHP_EOL . "name: " . (string)$Record->title . PHP_EOL;
+                        } else {
+                            $logger->error("incorrect item");
+                        }
 
-        $xml = simplexml_load_file($_strFeedUrl);
+                        echo "id: " . (string)$Record->id . PHP_EOL;
 
-        if ($xml === false) {
-            echo "Failed loading XML: ";
-            foreach(libxml_get_errors() as $error) {
-                echo "<br>", $error->message;
+                        if (!empty($Record->link)) {
+                            echo "link: " . (string)$Record->link . PHP_EOL;
+                        } else {
+                            $logger->error("incorrect item");
+                        }
+                        echo "date: " . (string)$Record->pubDate . PHP_EOL;
+                        echo "======================================================";
+                    }
+                    echo PHP_EOL;
+                    $product_array = json_decode(json_encode($xml), TRUE);
+                    return $product_array;
+                }
             }
-        } else {
-            foreach ($xml as $key => $Record) {
-                echo "name: ".(string)$Record->title.PHP_EOL;
-                echo "<br>";
-                echo "id: ".$key.PHP_EOL;
-                echo "<br>";
-                echo "link: ".(string)$Record->link.PHP_EOL;
-                echo "<br>";
-                echo "date: ".(string)$Record->pubDate.PHP_EOL;
-                echo "<br>";
-                echo "<br>";
-                echo "======================================================";
-                echo "<br>";
-            }
+        } catch (\Exception $e) {
+            $logger->error($e->getMessage());
+        } finally {
+            $logger->info('end');
         }
-//        $info_logger->notify(FeedParserBase(),'end');
     }
 }
