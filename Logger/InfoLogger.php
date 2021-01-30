@@ -1,0 +1,19 @@
+<?php
+
+namespace Logger;
+
+use Observer\IObservable;
+use Observer\IObserver;
+use Parser\FeedParserBase;
+
+class InfoLogger implements IObserver
+{
+    public function notify(IObservable $objSource, $strMessage)
+    {
+        if ($objSource instanceof FeedParserBase) {
+            $log_file = "./info-logs.log";
+            error_log($strMessage, 3, $log_file);
+            printf('INFO -> %s.' . PHP_EOL, $strMessage);
+        }
+    }
+}
